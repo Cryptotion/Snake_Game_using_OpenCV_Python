@@ -15,7 +15,7 @@ detector = HandDetector(detectionCon=0.8,maxHands=1)
 
 
 class SnakeGameClass:
-    def __init__(self, pathFood):
+    def __init__(self,pathFood):
         self.points = []    #all points of the snake
         self.lengths = []    # distance between each point
         self.currentLength = 0 # total length of the snake
@@ -23,16 +23,17 @@ class SnakeGameClass:
         self.previousHead = 0, 0    # previous head point
 
 
-        self.imgFood = cv2.imread(pathFood, cv2.IMREAD_UNCHANGED)
-        self.hFood, self.wFood, _ = self.imgFood.shape
+        self.imgFood = cv2.imread(pathFood,cv2.IMREAD_UNCHANGED)
+        self.hFood, self.wFood,_ = self.imgFood.shape
         self.foodPoint = 0, 0
         self.randomFoodLocation()
+
+        self.score = 0
 
 
 
     def randomFoodLocation(self):
-        self.foodPoint = random.randint(100,1000), random.randint(100, 600)
-        
+        self.foodPoint = random.randint(100, 600),random.randint(100, 600)        
 
     def update(self, imgMain, currentHead):
 
@@ -56,6 +57,14 @@ class SnakeGameClass:
                 if self.currentLength < self.allowedLength:
                     break
 
+        
+        # Check  if snake ate the food
+        rx, ry = self.foodPoint
+        if rx -self.wFood//2 < cx<rx + self.wFood//2 and ry-self.hFood//2<cy< ry + self.hFood//2:
+            self.randomFoodLocation()
+            self.allowedLength +=50
+            self.score +=1
+            print(self.score)
 
         # Draw snake
         if self.points:
@@ -65,8 +74,8 @@ class SnakeGameClass:
             cv2.circle(imgMain, self.points[-1], 20,(200,0,200), cv2.FILLED)
 
          # Draw Food
-        rx, ry = self.foodPoint
-        imgMain =  cvzone.overlayPNG(imgMain, self.imgFood, (rx-self.wFood//2,ry-self.hFood//2))
+        
+        imgMain = cvzone.overlayPNG(imgMain, self.imgFood, (rx - self.wFood // 2, ry - self.hFood // 2))
         return imgMain
 
 game = SnakeGameClass("Donut.png")
